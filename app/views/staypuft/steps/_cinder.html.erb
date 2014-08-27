@@ -15,16 +15,17 @@
 
   </div>
   <div class="cinder_equallogic col-md-offset-0 hide">
-    <%= text_f p, :san_ip, class: "cinder_equallogic",
+    <%= fields_for :eqlx, @deployment.cinder.eqlx do |e| %>
+    <%= text_f e, :san_ip, class: "cinder_equallogic",
                label:              _(Staypuft::Deployment::CinderService::SanIp::HUMAN) %>
-    <%= text_f p, :san_login, class: "cinder_equallogic",
+    <%= text_f e, :san_login, class: "cinder_equallogic",
                label:              _(Staypuft::Deployment::CinderService::SanLogin::HUMAN) %>
-    <%= text_f p, :san_password, class: "cinder_equallogic",
+    <%= text_f e, :san_password, class: "cinder_equallogic",
                label:              _(Staypuft::Deployment::CinderService::SanPassword::HUMAN) %>
-    <%= text_f p, :eqlx_pool, class: "cinder_equallogic",
+    <%= text_f e, :pool, class: "cinder_equallogic",
                label:              _(Staypuft::Deployment::CinderService::EqlxPool::HUMAN) %>
-    <%= text_f p, :eqlx_group_name, class: "cinder_equallogic",
+    <%= text_f e, :group_name, class: "cinder_equallogic",
                label:              _(Staypuft::Deployment::CinderService::EqlxGroupName::HUMAN) %>
-
+    <% end %>
   </div>
 <% end %>
