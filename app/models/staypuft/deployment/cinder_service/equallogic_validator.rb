@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Staypuft
   class Deployment::CinderService::EquallogicValidator < ActiveModel::EachValidator
     def validate_each(record, attribute, value)

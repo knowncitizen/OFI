@@ -59,7 +59,9 @@ module Staypuft
 
     class Jail < Safemode::Jail
       allow :lvm_backend?, :nfs_backend?, :ceph_backend?, :equallogic_backend?,
-        :rbd_secret_uuid, :nfs_uri, :eqlx
+        :multiple_backends?, :rbd_secret_uuid, :nfs_uri, :eqlx,
+        :compute_eqlx_san_ips, :compute_eqlx_san_logins, :compute_eqlx_san_passwords,
+        :compute_eqlx_group_names, :compute_eqlx_pools
     end
 
     def set_defaults
@@ -91,6 +93,11 @@ module Staypuft
       self.backend_eqlx == "true"
     end
 
+    def multiple_backends?
+      (equallogic_backend? and eqlx.length > 1) or
+        BACKEND_TYPE_PARAMS.select { |type| send(type.to_s) == "true" }.length > 1
+    end
+
     # view should use this rather than DriverBackend::LABELS to hide LVM for HA.
     def backend_labels_for_layout
       ret_list = DriverBackend::LABELS.clone
@@ -112,6 +119,12 @@ module Staypuft
 
     def lvm_ptable
       Ptable.find_by_name('LVM with cinder-volumes')
+    end
+
+    %w{san_ip san_login san_password group_name pool}.each do |name|
+      define_method "compute_eqlx_#{name}s" do
+        eqlx.collect { |e| e[name] }
+      end
     end
 
     private
