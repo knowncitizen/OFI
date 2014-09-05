@@ -36,42 +36,46 @@ module Staypuft
     end
 
     def param_attr_array(*names)
-      names.each do |name|
-        ivar_name = :"@#{name}"
-        param_base_name = "ui::#{param_scope}::#{name}"
+      names.each do |item|
+        item.each do |name, type|
+          ivar_name = :"@#{name}"
+          param_base_name = "ui::#{param_scope}::#{name}"
 
-        define_method name do
-          instance_variable_get(ivar_name) or
-          begin
-            params = hostgroup.group_parameters.where(['name LIKE ?', "#{param_base_name}%"])
-            ivar = []
-            params.each do |param|
-              if param.try(:value)
-                full, index, param_name = *param.name.match(/#{param_base_name}::(\d+)::(.*)/)
-                ivar[index.to_i] ||= {}
-                ivar[index.to_i][param_name] = param.value
+          define_method name do
+            instance_variable_get(ivar_name) or
+            begin
+              params = hostgroup.group_parameters.where(['name LIKE ?', "#{param_base_name}%"])
+              ivar = []
+              params.each do |param|
+                value = param.try(:value)
+                unless value.nil?
+                  full, index = *param.name.match(/#{param_base_name}::(\d+)/)
+                  ivar[index.to_i] ||= type.new({id: index.to_i }.merge(JSON.parse(value)))
+                end
               end
+              instance_variable_set(ivar_name, ivar)
             end
-            instance_variable_set(ivar_name, ivar)
           end
-        end
 
-        define_equals name
+          define_equals name
 
-        after_save do
-          values = send(name)
-          # Delete all params since array can shrink
-          params = hostgroup.group_parameters.where(['name LIKE ?', "#{param_base_name}%"])
-          params.each do |param|
-            param.try(:destroy)
+          define_method "#{name}_attributes=" do |attributes|
+            Rails.logger.error attributes
           end
-          if not values.blank?
-            values.each_with_index do |value, index|
-              value.each do |k,v|
+
+          after_save do
+            values = send(name)
+            # Delete all params since array can shrink
+            params = hostgroup.group_parameters.where(['name LIKE ?', "#{param_base_name}%"])
+            params.each do |param|
+              param.try(:destroy)
+            end
+            if not values.blank?
+              values.each_with_index do |value, index|
                 param = hostgroup.
                     group_parameters.
-                        find_or_initialize_by_name( "#{param_base_name}::#{index}::#{k}")
-                param.update_attributes!(value: v)
+                        find_or_initialize_by_name( "#{param_base_name}::#{index}")
+                param.update_attributes!(value: value.to_json)
               end
             end
           end

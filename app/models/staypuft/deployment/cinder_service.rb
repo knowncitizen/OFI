@@ -9,10 +9,9 @@ module Staypuft
     BACKEND_PARAMS = :nfs_uri, :rbd_secret_uuid
 
     param_attr *BACKEND_TYPE_PARAMS, *BACKEND_PARAMS
-    param_attr_array :eqlx
+    param_attr_array :eqlxs => Equallogic
 
     after_save :set_lvm_ptable
-
 
     module DriverBackend
       LVM        = 'lvm'
@@ -52,14 +51,14 @@ module Staypuft
     module EqlxGroupName
       HUMAN       = N_('Group:')
     end
-    validates :eqlx,
+    validates :eqlxs,
               :presence   => true,
               :if         => :equallogic_backend?,
               :equallogic => true
 
     class Jail < Safemode::Jail
       allow :lvm_backend?, :nfs_backend?, :ceph_backend?, :equallogic_backend?,
-        :multiple_backends?, :rbd_secret_uuid, :nfs_uri, :eqlx,
+        :multiple_backends?, :rbd_secret_uuid, :nfs_uri, :eqlxs, :eqlxs_attributes=,
         :compute_eqlx_san_ips, :compute_eqlx_san_logins, :compute_eqlx_san_passwords,
         :compute_eqlx_group_names, :compute_eqlx_pools
     end
@@ -123,7 +122,7 @@ module Staypuft
 
     %w{san_ip san_login san_password group_name pool}.each do |name|
       define_method "compute_eqlx_#{name}s" do
-        eqlx.collect { |e| e[name] }
+        eqlxs.collect { |e| e.send name }
       end
     end
 
