@@ -6,5 +6,6 @@ module Staypuft
     def initialize(attributes = {})
       attributes.each { |attr, value| send "#{attr}=", value } unless attributes.nil?
     end
+
   end
 end

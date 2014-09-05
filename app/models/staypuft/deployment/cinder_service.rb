@@ -93,7 +93,7 @@ module Staypuft
     end
 
     def multiple_backends?
-      (equallogic_backend? and eqlx.length > 1) or
+      (equallogic_backend? and eqlxs.length > 1) or
         BACKEND_TYPE_PARAMS.select { |type| send(type.to_s) == "true" }.length > 1
     end
 
@@ -113,7 +113,7 @@ module Staypuft
       { "backend_lvm" => backend_lvm, "backend_ceph" => backend_ceph,
         "backend_nfs" => backend_nfs, "backend_eqlx" => backend_eqlx,
         "nfs_uri" => nfs_uri, "rbd_secret_uuid" => rbd_secret_uuid,
-        "eqlx" => eqlx }
+        "eqlxs" => eqlxs }
     end
 
     def lvm_ptable

@@ -7,10 +7,10 @@ module Staypuft
       is_valid = true
       value.each_with_index do |v, index|
         attribute_with_index = "#{attribute}[#{index}]"
-        is_valid = false unless validate_san_ip record, "#{attribute_with_index}[san_ip]", v["san_ip"]
-        is_valid = false unless validate_san_login record, "#{attribute_with_index}[san_login]", v["san_login"]
-        is_valid = false unless validate_eqlx_pool record, "#{attribute_with_index}[pool]", v["pool"]
-        is_valid = false unless validate_eqlx_group_name record, "#{attribute_with_index}[group_name]", v["group_name"]
+        is_valid = false unless validate_san_ip record, "#{attribute_with_index}[san_ip]", v.san_ip
+        is_valid = false unless validate_san_login record, "#{attribute_with_index}[san_login]", v.san_login
+        is_valid = false unless validate_eqlx_pool record, "#{attribute_with_index}[pool]", v.pool
+        is_valid = false unless validate_eqlx_group_name record, "#{attribute_with_index}[group_name]", v.group_name
       end
       is_valid
     end

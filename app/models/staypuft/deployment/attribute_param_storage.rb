@@ -15,7 +15,9 @@ module Staypuft
                                     hostgroup.group_parameters.find_by_name(param_name).try(:value))
         end
 
-        define_equals name
+        define_method "#{name}=" do |value|
+          instance_variable_set(:"@#{name}", value)
+        end
 
         after_save do
           value = send(name)
@@ -57,7 +59,17 @@ module Staypuft
             end
           end
 
-          define_equals name
+          define_method "#{name}=" do |value|
+            if value.is_a? Hash
+              values = []
+              value.each do |k,v|
+                values[k.to_i] = type.new({id: k.to_i }.merge(v))
+              end
+              instance_variable_set(:"@#{name}", values)
+            else
+              instance_variable_set(:"@#{name}", value)
+            end
+          end
 
           define_method "#{name}_attributes=" do |attributes|
             Rails.logger.error attributes
@@ -80,14 +92,6 @@ module Staypuft
             end
           end
         end
-      end
-    end
-
-    private
-
-    def define_equals(name)
-      define_method "#{name}=" do |value|
-        instance_variable_set(:"@#{name}", value)
       end
     end
   end
