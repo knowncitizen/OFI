@@ -63,7 +63,7 @@ module Staypuft
             if value.is_a? Hash
               values = []
               value.each do |k,v|
-                values[k.to_i] = type.new({id: k.to_i }.merge(v))
+                values << type.new(v)
               end
               instance_variable_set(:"@#{name}", values)
             else

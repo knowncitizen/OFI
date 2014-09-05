@@ -35,26 +35,18 @@
 
 
       <div class="cinder_equallogic col-md-offset-1 hide">
-        <div class="cinder_equallogic_picker">
+        <div id="eqlxs" class="cinder_equallogic_picker">
         <% @deployment.cinder.eqlxs.each_with_index do |eqlx, index| %>
           <%= p.fields_for "eqlxs[]", eqlx, index: index do |e| %>
-          <div class="eqlx well">
-          <%= e.text_field :san_ip, class: "cinder_equallogic",
-                     label:              _(Staypuft::Deployment::CinderService::SanIp::HUMAN) %>
-          <%= e.text_field :san_login, class: "cinder_equallogic",
-                     label:              _(Staypuft::Deployment::CinderService::SanLogin::HUMAN) %>
-          <%= e.text_field :san_password, class: "cinder_equallogic",
-                     label:              _(Staypuft::Deployment::CinderService::SanPassword::HUMAN) %>
-          <%= e.text_field :pool, class: "cinder_equallogic",
-                     label:              _(Staypuft::Deployment::CinderService::EqlxPool::HUMAN) %>
-          <%= e.text_field :group_name, class: "cinder_equallogic",
-                     label:              _(Staypuft::Deployment::CinderService::EqlxGroupName::HUMAN) %>
-          </div>
+            <% render partial: 'cinder_equallogic_form', locals: {e: e} %>
           <% end %>
         <% end %>
         </div>
         <button type="button" class= "btn btn-primary btn-sm add_another_server"><%= _("Add Another Server") %></button>
     </div>
+    <script type='html/template' id='eqlx_form_template'>
+      <%= p.fields_for 'eqlxs[]', Staypuft::Deployment::CinderService::Equallogic.new, index: 'NEW_RECORD' do |e| render(partial: 'cinder_equallogic_form', locals: {e: e}); end %>
+    </script>
     <%end%>
   </div>
 </div>
